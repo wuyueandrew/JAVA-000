@@ -1,0 +1,161 @@
+Classfile /Users/wuyue/IdeaProjects/solution/src/Hello.class  类路径
+  Last modified 2020-10-19; size 680 bytes                    编译时间;整个class文件的字节数
+  MD5 checksum ac46b8881140550056d94688820fc94a               class的MD5校验
+  Compiled from "Hello.java"                                  java源文件
+public class Hello
+  minor version: 0                                            class版本52.0对应jdk1.8
+  major version: 52                                           public表示public类，super是修复1.0版本的问题，1.1开始，都会带ACC_SUPER
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:                                                常量池，相当于定义别名，使用的时候用#+数字代替，一个常量可以由多个常量组成，//是方便阅读的注释
+   #1 = Methodref          #8.#20         // java/lang/Object."<init>":()V                       #1是编号，=分隔符，Methodref表示方法引用，()表示方法没有入参，V表示返回值为void
+   #2 = Methodref          #21.#22        // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+   #3 = Class              #23            // Hello                                               class表示类引用
+   #4 = Methodref          #3.#20         // Hello."<init>":()V
+   #5 = Fieldref           #24.#25        // java/lang/System.out:Ljava/io/PrintStream;          字段引用，表示System的成员变量out，L表示是一个对象，类型是PrintStream
+   #6 = Methodref          #3.#26         // Hello.sum:([I)Ljava/lang/Integer;
+   #7 = Methodref          #27.#28        // java/io/PrintStream.println:(Ljava/lang/Object;)V
+   #8 = Class              #29            // java/lang/Object
+   #9 = Utf8               <init>                                                                字符串
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               sum
+  #14 = Utf8               ([I)Ljava/lang/Integer;
+  #15 = Utf8               StackMapTable
+  #16 = Utf8               main
+  #17 = Utf8               ([Ljava/lang/String;)V
+  #18 = Utf8               SourceFile
+  #19 = Utf8               Hello.java
+  #20 = NameAndType        #9:#10         // "<init>":()V                                         字段/方法的部分符号引用
+  #21 = Class              #30            // java/lang/Integer
+  #22 = NameAndType        #31:#32        // valueOf:(I)Ljava/lang/Integer;
+  #23 = Utf8               Hello
+  #24 = Class              #33            // java/lang/System
+  #25 = NameAndType        #34:#35        // out:Ljava/io/PrintStream;
+  #26 = NameAndType        #13:#14        // sum:([I)Ljava/lang/Integer;
+  #27 = Class              #36            // java/io/PrintStream
+  #28 = NameAndType        #37:#38        // println:(Ljava/lang/Object;)V
+  #29 = Utf8               java/lang/Object
+  #30 = Utf8               java/lang/Integer
+  #31 = Utf8               valueOf
+  #32 = Utf8               (I)Ljava/lang/Integer;
+  #33 = Utf8               java/lang/System
+  #34 = Utf8               out
+  #35 = Utf8               Ljava/io/PrintStream;
+  #36 = Utf8               java/io/PrintStream
+  #37 = Utf8               println
+  #38 = Utf8               (Ljava/lang/Object;)V
+{
+  public Hello();                                                                       public表示访问权限，Hello是方法名
+    descriptor: ()V                                                                     descriptor方法描述：()表示方法没有入参，V表示返回值为void
+    flags: ACC_PUBLIC                                                                   访问标志 public
+    Code:
+      stack=1, locals=1, args_size=1                                                    /*stack表示执行方法需要的栈深，locals表示局部变量表的槽位，args_size参数列表，
+         0: aload_0                                                                         静态方法无入参为0，非静态方法无入参默认为1，第一个是this指针/
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+
+  public java.lang.Integer sum(int[]);
+    descriptor: ([I)Ljava/lang/Integer;                                                 ([I)入参是整数数组，返回值java/lang/Integer
+    flags: ACC_PUBLIC
+    Code:                                                                               经过分析，局部变量表结构：0是this指针，1是int[]数组，2是局部变量sum，3是for循环的索引i
+      stack=3, locals=4, args_size=2                                                    同上args_size=2因为0是this指针，1是整数数组
+         0: aload_1                                                                     把入参：整型数组推到栈顶
+         1: ifnonnull     6                                                             不为null时跳转到6
+         4: aconst_null                                                                 把null推到栈顶
+         5: areturn                                                                     从当前方法返回对象引用
+         6: iconst_0                                                                    将int型0推送至栈顶
+         7: istore_2                                                                    将栈顶int型数值存入第三个本地变量
+         8: iconst_0                                                                    将int型0推送至栈顶
+         9: istore_3                                                                    将栈顶int型数值存入第四个本地变量
+        10: iload_3                                                                     将第四个int型本地变量推送至栈顶
+        11: aload_1                                                                     将第二个引用类型本地变量推送至栈顶
+        12: arraylength                                                                 获取数组的长度值并压入栈顶
+        13: if_icmpge     28                                                            比较栈顶两int型数值大小, 当结果大于等于0时跳转
+        16: iload_2
+        17: aload_1
+        18: iload_3
+        19: iaload                                                                      将int型数组指定索引的值推送至栈顶
+        20: iadd                                                                        int相加
+        21: istore_2
+        22: iinc          3, 1                                                          本地变量表第三个槽位自增1操作
+        25: goto          10
+        28: iload_2
+        29: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;  invokestatic静态方法调用
+        32: areturn
+      LineNumberTable:
+        line 4: 0
+        line 5: 4
+        line 7: 6
+        line 8: 8
+        line 9: 16
+        line 8: 22
+        line 11: 28
+      StackMapTable: number_of_entries = 3
+        frame_type = 6 /* same */
+        frame_type = 253 /* append */
+          offset_delta = 3
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 17
+
+  0-5行：对应的是针对入参：数组的判空，如果为空给栈顶压一个null，然后把栈顶的null返回，否则直接跳转到第6行
+  6-25行：6-7行初始化sum变量并存到本地变量表第三个槽位，8-13行对应for循环的逻辑，先初始化i，压到栈里然后把数组长度也压栈，
+         13行是一个条件比较，满足的话16-19行按顺序把sum，数组，循环索引i压入栈（此时也可以看出栈最大深度是3，即stack=3），
+         iaload把栈顶两个元素弹出，并按循环索引i定位到数组对应元素并把值压入栈顶，20行是个简单的int相加，21行写回本地变量表，
+         接着22行循环索引i自增，25行回到循环开始继续循环
+  28-32：从局部变量表把sum压入栈中，invokestatic静态方法调用，编译器做一个自动装箱，类型转换为Integer后，32行返回对象
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=4, locals=3, args_size=1
+         0: iconst_4                          将int型4推送至栈顶
+         1: newarray       int                创建一个int类型的int数组
+         3: dup                               复制栈顶数值并将复制值压入栈顶
+         4: iconst_0
+         5: iconst_1
+         6: iastore
+         7: dup
+         8: iconst_1
+         9: iconst_2
+        10: iastore
+        11: dup
+        12: iconst_2
+        13: iconst_3
+        14: iastore
+        15: dup
+        16: iconst_3
+        17: iconst_4
+        18: iastore
+        19: astore_1
+        20: new           #3                  // class Hello
+        23: dup
+        24: invokespecial #4                  // Method "<init>":()V
+        27: astore_2
+        28: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;  获取指定类的静态域, 并将其压入栈顶
+        31: aload_2
+        32: aload_1
+        33: invokevirtual #6                  // Method sum:([I)Ljava/lang/Integer;
+        36: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/Object;)V
+        39: return
+      LineNumberTable:
+        line 15: 0
+        line 16: 20
+        line 17: 28
+        line 18: 39
+
+
+      这段就比较简单了，经过分析，局部变量表结构：0是入参字符串数组，1是int数组array，2对象hello
+      0-19行：初始化int数组，初始化分为两部分，第一部分0-1先把空数组压入栈，第二部分3-19把初始化值写入
+             这里可以注意每次初始化都要先复制栈顶的数组引用然后压入索引和元素值，iastore存入数组对应索引
+             这里可以确定栈最大深度4，两个数组引用，一个元素值，一个索引
+      20-27行：声明初始化hello并存入第三个局部变量表
+      28-39行：28行getstatic是获取指定类的静态域, 并将其压入栈顶，即PrintStream类型的System.out，然后把hello对象和数组压栈
+              33行invokevirtual调用hello对象的sum方法并将结果入栈，36行invokevirtual调用System.out的println方法打印33行压栈的结果
+              39行return退出
+}
+SourceFile: "Hello.java"
