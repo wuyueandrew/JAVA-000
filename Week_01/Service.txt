@@ -1,0 +1,139 @@
+jvm命令分析练习
+1.jps -mlv
+定位到服务pid=1,启动参数如下：
+1 xxx.jar --spring.profiles.active=test --server.port=8081 -Dfile.encoding=UTF8 -Duser.timezone=GMT+08
+-Xms500m
+-Xmx500m
+-Xss256K
+-XX:+UseConcMarkSweepGC
+-XX:CMSInitiatingOccupancyFraction=80
+-XX:MaxDirectMemorySize=256m
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:SurvivorRatio=8
+-XX:+ExplicitGCInvokesConcurrent
+-XX:MetaspaceSize=256m
+-XX:MaxMetaspaceSize=256m
+-XX:-OmitStackTraceInFastThrow
+-XX:+PrintGCDetails
+-XX:+PrintGCDateStamps
+-Xloggc:./logs/gc.log
+-XX:+UseGCLogFileRotation
+-XX:NumberOfGCLogFiles=5
+-XX:GCLogFileSize=10m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=./logs/
+-Djava.io.tmpdir=./logs/
+Xms和Xmx都是500m不需要启动后扩容比较合理，其他暂时没什么问题
+2.jstat -gcutil 1 1000 1000
+  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT
+  0.00  66.22  57.65  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.68  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.70  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.70  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.70  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.70  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.76  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.77  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.77  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+  0.00  66.22  57.77  32.40  94.60  92.41     67    9.401     0    0.000    9.401
+
+查看下gc情况，MetaspaceSize占用92.41%，前面确认启动参数-XX:MaxMetaspaceSize=256m，感觉有点小随时可能不够，
+S1，Eden和Old感觉占比也有点高，正想看看容量多少才发现没执行jstat -gc，果然还是得按教的来分析
+
+3.jstat -gc 1 1000 1000
+ S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT
+17024.0 17024.0  0.0   11319.1 136576.0 118682.0  341376.0   110599.3  110336.0 104402.4 13568.0 12566.5     69    9.419   0      0.000    9.419
+17024.0 17024.0  0.0   11319.1 136576.0 118713.7  341376.0   110599.3  110336.0 104402.4 13568.0 12566.5     69    9.419   0      0.000    9.419
+17024.0 17024.0  0.0   11319.1 136576.0 118748.7  341376.0   110599.3  110336.0 104402.4 13568.0 12566.5     69    9.419   0      0.000    9.419
+17024.0 17024.0  0.0   11319.1 136576.0 118757.9  341376.0   110599.3  110336.0 104402.4 13568.0 12566.5     69    9.419   0      0.000    9.419
+17024.0 17024.0  0.0   11319.1 136576.0 118760.6  341376.0   110599.3  110336.0 104402.4 13568.0 12566.5     69    9.419   0      0.000    9.419
+
+先看下容量信息，Eden136m Old340m New = Eden + S0 + S1 = 170, Old = 341 , New + Old = 500m Xmx,
+NewRatio = 341 / 170 = 2是默认值，SurvivorRatio = 136 / 17 = 8也是默认值，
+最后看下GC YGC平均时间 = 9.419 / 69 = 137ms，时间特别长需要关注一下，如果无法确定原因可以临时调大Xms和Xmx减少YGC次数，
+这样可以减少YGC时无法提供服务的时间。
+
+4.jmap -heap 1
+Attaching to process ID 1, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.131-b11
+
+using parallel threads in the new generation.
+using thread-local object allocation.
+Concurrent Mark-Sweep GC
+
+Heap Configuration:
+   MinHeapFreeRatio         = 40
+   MaxHeapFreeRatio         = 70
+   MaxHeapSize              = 524288000 (500.0MB)
+   NewSize                  = 174718976 (166.625MB)
+   MaxNewSize               = 174718976 (166.625MB)
+   OldSize                  = 349569024 (333.375MB)
+   NewRatio                 = 2
+   SurvivorRatio            = 8
+   MetaspaceSize            = 268435456 (256.0MB)
+   CompressedClassSpaceSize = 1073741824 (1024.0MB)
+   MaxMetaspaceSize         = 268435456 (256.0MB)
+   G1HeapRegionSize         = 0 (0.0MB)
+
+Heap Usage:
+New Generation (Eden + 1 Survivor Space):
+   capacity = 157286400 (150.0MB)
+   used     = 32263368 (30.76874542236328MB)
+   free     = 125023032 (119.23125457763672MB)
+   20.512496948242188% used
+Eden Space:
+   capacity = 139853824 (133.375MB)
+   used     = 22649320 (21.600074768066406MB)
+   free     = 117204504 (111.7749252319336MB)
+   16.194995140068535% used
+From Space:
+   capacity = 17432576 (16.625MB)
+   used     = 9614048 (9.168670654296875MB)
+   free     = 7818528 (7.456329345703125MB)
+   55.149898672462406% used
+To Space:
+   capacity = 17432576 (16.625MB)
+   used     = 0 (0.0MB)
+   free     = 17432576 (16.625MB)
+   0.0% used
+concurrent mark-sweep generation:
+   capacity = 349569024 (333.375MB)
+   used     = 113253680 (108.00712585449219MB)
+   free     = 236315344 (225.3678741455078MB)
+   32.398087995348234% used
+
+
+44089 interned Strings occupying 4894208 bytes.
+
+上面都分析完了，这里知道GC Collector用的CMS
+
+5.jmap -heap 1
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:        306449       43334736  [C
+   2:         21131       16208784  [B
+   3:         84789        9066696  [Ljava.lang.Object;
+   4:         30044        8994960  [I
+   5:         82438        7254544  java.lang.reflect.Method
+   6:        275408        6609792  java.lang.String
+   7:        113134        4525360  java.util.LinkedHashMap$Entry
+   8:        117087        3746784  java.util.concurrent.ConcurrentHashMap$Node
+   9:         59904        3354624  java.util.LinkedHashMap
+  10:         36217        2820920  [Ljava.util.HashMap$Node;
+  11:         49615        2381520  org.springframework.util.ConcurrentReferenceHashMap$SoftEntryReference
+  12:         20007        2222088  java.lang.Class
+  13:         59728        1911296  java.util.concurrent.locks.AbstractQueuedSynchronizer$Node
+  14:         51813        1658016  java.lang.ref.WeakReference
+  15:         62479        1499496  java.util.ArrayList
+  16:         45700        1462400  java.util.HashMap$Node
+  17:           850        1417560  [Ljava.util.concurrent.ConcurrentHashMap$Node;
+  18:         19501        1404072  java.lang.reflect.Field
+  19:         63620        1401960  [Ljava.lang.Class;
+  20:          1950        1279200  io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueue
+  21:         33012        1056384  java.util.ArrayList$Itr
+
+这个感觉比较正常，前三个是字符数组，字节数组，对象数组
+
+6.因为无死锁问题，所以没使用jstack
