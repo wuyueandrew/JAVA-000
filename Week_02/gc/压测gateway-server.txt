@@ -1,0 +1,52 @@
+由于mac没法使用SuperBenchmarker，使用ApacheBench
+
+1.ab -c 20 -t 60 http://localhost:8088/api/hello
+20个并发，60s
+This is ApacheBench, Version 2.3 <$Revision: 1826891 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 5000 requests
+Completed 10000 requests
+Completed 15000 requests
+^C
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            8088
+
+Document Path:          /api/hello
+Document Length:        11 bytes
+
+Concurrency Level:      20
+Time taken for tests:   28.812 seconds
+Complete requests:      16314
+Failed requests:        0
+Total transferred:      2349216 bytes
+HTML transferred:       179454 bytes
+Requests per second:    566.22 [#/sec] (mean)
+Time per request:       35.322 [ms] (mean)
+Time per request:       1.766 [ms] (mean, across all concurrent requests)
+Transfer rate:          79.63 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0   17 461.2      1   13181
+Processing:     0    1   8.5      1     345
+Waiting:        0    1   8.1      1     344
+Total:          0   18 461.3      2   13184
+
+Percentage of the requests served within a certain time (ms)
+  50%      2
+  66%      2
+  75%      2
+  80%      2
+  90%      2
+  95%      2
+  98%      2
+  99%      2
+ 100%  13184 (longest request)
+
+jvisualvm监控见图片1.jpg
+GC看起来不是特别方便，装了个VisualGC，重新压测第一次没有GC，第二次加到40线程，见图片2.jpg，可以发现发生一次MinorGC

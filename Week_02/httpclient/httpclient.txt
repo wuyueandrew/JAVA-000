@@ -1,0 +1,4 @@
+使用了httpclient5.0
+gradle如下：
+compile group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.0.3'
+项目太大了我就把类贴上来了，顺便截图放个结果
